@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HTMLPlugin = require('html-webpack-plugin')
+const ExtractPlugin = require('extract-text-webpack-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -13,8 +14,7 @@ const config = {
         path: path.join(__dirname, 'dist')
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
@@ -36,30 +36,14 @@ const config = {
                 ]
             },
             {
-                test: /\.styl/,
-                use: [
-                    'style-loader',
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            sourceMap: true
-                        }
-                    },
-                    'stylus-loader'
-                ]
-            },
-            {
                 test: /\.(gif|jpg|jpeg|png|svg)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 1024,
-                            name: '[name].[ext]'
-                        }
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 1024,
+                        name: '[name].[ext]'
                     }
-                ]
+                }]
             }
         ]
     },
@@ -76,6 +60,20 @@ const config = {
 }
 
 if (isDev) {
+    config.module.rules.push({
+        test: /\.styl/,
+        use: [
+            'style-loader',
+            'css-loader',
+            {
+                loader: 'postcss-loader',
+                options: {
+                    sourceMap: true
+                }
+            },
+            'stylus-loader'
+        ]
+    })
     config.mode = 'development'
     config.devtool = '#cheap-module-eval-source-map'
     config.devServer = {
@@ -91,6 +89,34 @@ if (isDev) {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()
     )
+} else {
+    config.output.filename = '[name].[chunkhash:8].js'
+    config.module.rules.push({
+        test: /\.styl/,
+        use: ExtractPlugin.extract({
+            fallback: "style-loader",
+            use: [
+                'css-loader',
+                {
+                    loader: 'postcss-loader',
+                    options: {
+                        sourceMap: true
+                    }
+                },
+                'stylus-loader'
+            ]
+        })
+    })
+    config.plugins.push(
+        new ExtractPlugin({
+            filename: 'styles.[md5:contenthash:8].css'
+        })
+    )
+    config.optimization = {
+        splitChunks: {
+            chunks: 'all'
+        }
+    }
 }
 
 module.exports = config
