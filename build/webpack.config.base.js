@@ -4,10 +4,11 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const config = {
   mode: process.env.NODE_ENV || 'production',
   target: 'web',
-  entry: path.join(__dirname, '../client/index.js'),
+  entry: path.join(__dirname, '../client/client-entry.js'),
   output: {
-    filename: 'bundle.js',
-    path: path.join(__dirname, '../dist')
+    filename: 'bundle.[hash:8].js',
+    path: path.join(__dirname, '../public'),
+    publicPath: 'http://127.0.0.1:8000/public/'
   },
   module: {
     rules: [
@@ -42,7 +43,7 @@ const config = {
             options: {
               // 开启 CSS Modules
               modules: {
-                localIdentName: '[path][name]__[local]--[hash:base64:5]',
+                localIdentName: '[path][name]__[local]--[hash:base64:5]'
               },
               localsConvention: 'camelCase'
             }

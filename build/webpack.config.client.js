@@ -1,17 +1,22 @@
+const path = require('path')
 const webpack = require('webpack')
 const HTMLPlugin = require('html-webpack-plugin')
-const ExtractPlugin = require('extract-text-webpack-plugin')
+// const ExtractPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const baseConfig = require('./webpack.config.base')
 const merge = require('webpack-merge')
+const VueClientPlugin = require('vue-server-renderer/client-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
-console.log('baseConfig', baseConfig.entry);
 
 const devServer = {
   port: '8000',
   host: '0.0.0.0',
   overlay: {
     errors: true
+  },
+  historyApiFallback: {
+    index: '/public/index.html'
   },
   // open: true,
   hot: true
@@ -23,7 +28,10 @@ const defultConfig = [
       NODE_ENV: isDev ? '"development"' : '"production"'
     }
   }),
-  new HTMLPlugin()
+  new HTMLPlugin({
+    template: path.join(__dirname, 'template.html')
+  }),
+  new VueClientPlugin()
 ]
 
 let config
@@ -36,7 +44,7 @@ if (isDev) {
         {
           test: /\.styl/,
           use: [
-            'style-loader',
+            'vue-style-loader',
             'css-loader',
             {
               loader: 'postcss-loader',
@@ -57,31 +65,30 @@ if (isDev) {
 } else {
   config = merge(baseConfig, {
     output: {
-      filename: '[name].[chunkhash:8].js'
+      filename: '[name].[chunkhash:8].js',
+      publicPath: '/public/'
     },
     module: {
       rules: [
         {
           test: /\.styl/,
-          use: ExtractPlugin.extract({
-            fallback: "style-loader",
-            use: [
-              'css-loader',
-              {
-                loader: 'postcss-loader',
-                options: {
-                  sourceMap: true
-                }
-              },
-              'stylus-loader'
-            ]
-          })
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                sourceMap: true
+              }
+            },
+            'stylus-loader'
+          ]
         }
       ]
     },
     plugins: defultConfig.concat([
-      new ExtractPlugin({
-        filename: 'styles.[md5:contenthash:8].css'
+      new MiniCssExtractPlugin({
+        filename: 'styles.[contenthash:8].css'
       })
     ]),
     optimization: {
