@@ -1,6 +1,33 @@
 <template>
   <section class="real-app">
+    <div class="tab-container">
+      <tabs
+        @change="handleChangeTab"
+        :value="tabValue"
+      >
+        <tab
+          label="tab1"
+          index="1"
+        >
+          <span>tab content 1 {{ inputContent }}</span>
+        </tab>
+        <tab index="2">
+          <span
+            slot="label"
+            style="color: red;"
+          >tab2</span>
+          <span>tab content 2</span>
+        </tab>
+        <tab
+          label="tab3"
+          index="3"
+        >
+          <span>tab content 3</span>
+        </tab>
+      </tabs>
+    </div>
     <input
+      v-model="inputContent"
       @keyup.enter="addTodo"
       type="text"
       class="add-input"
@@ -13,7 +40,7 @@
       :todo="todo"
       @del="deleteTodo"
     />
-    <tabs
+    <helper
       :filter="filter"
       :todos="todos"
       @toggle="toggleFilter"
@@ -24,7 +51,7 @@
 
 <script>
 import Item from './item.vue'
-import Tabs from './tabs.vue'
+import Helper from './tabs.vue'
 let id = 0
 
 export default {
@@ -33,12 +60,14 @@ export default {
   },
   components: {
     Item,
-    Tabs
+    Helper
   },
   data () {
     return {
       todos: [],
-      filter: 'all'
+      filter: 'all',
+      tabValue: '1',
+      inputContent: '1'
     }
   },
   computed: {
@@ -74,6 +103,9 @@ export default {
       this.todos = this.todos.filter(todo => {
         return !todo.completed
       })
+    },
+    handleChangeTab (value) {
+      this.tabValue = value
     }
   }
 }
@@ -104,4 +136,7 @@ export default {
     border none
     box-shadow inset 0 -2px 1px rgba(0, 0, 0, 0.3)
 }
+.tab-container
+  background-color #fff
+  padding 0 15px
 </style>
