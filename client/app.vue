@@ -5,6 +5,12 @@
     <p>{{ fullName }} {{ count }}</p>
     <!-- <Todo /> -->
     <router-view />
+    <button
+      @click="notify"
+    >
+      click me
+    </button>
+    <!-- <notification content="test notify" />> -->
     <Footer />
   </div>
 </template>
@@ -39,10 +45,10 @@ export default {
     // }
   },
   mounted () {
-    this.updateCountAsync({
-      num: 5,
-      time: 2000
-    })
+    // this.updateCountAsync({
+    //   num: 5,
+    //   time: 2000
+    // })
     // let i = 0
     // setInterval(() => {
     //   this.updateCount({
@@ -52,7 +58,13 @@ export default {
   },
   methods: {
     ...mapActions(['updateCountAsync']),
-    ...mapMutations(['updateCount'])
+    ...mapMutations(['updateCount']),
+    notify () {
+      this.$notify({
+        content: 'test $notify',
+        btn: 'close'
+      })
+    }
   }
 }
 </script>
