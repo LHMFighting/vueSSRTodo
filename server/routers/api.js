@@ -40,7 +40,6 @@ apiRouter
     ctx.body = successResponse(data)
   })
   .post('/delete/completed', async (ctx) => {
-    console.log('/delete/completed方法-------------')
     const data = await ctx.db.deleteCompleted(ctx.request.body.ids)
     ctx.body = successResponse(data)
   })

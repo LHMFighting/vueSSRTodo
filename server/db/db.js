@@ -56,7 +56,6 @@ module.exports = (appId, appKey) => {
       ))
     },
     async deleteCompleted (ids) {
-      console.log('db deleteCompleted方法22222222222222222', ids)
       const requests = ids.map(id => {
         return {
           method: 'DELETE',
