@@ -3,31 +3,17 @@
     <div class="tab-container">
       <tabs
         @change="handleChangeTab"
-        :value="tabValue"
+        :value="filter"
       >
         <tab
-          label="tab1"
-          index="1"
-        >
-          <span>tab content 1 {{ inputContent }}</span>
-        </tab>
-        <tab index="2">
-          <span
-            slot="label"
-            style="color: red;"
-          >tab2</span>
-          <span>tab content 2</span>
-        </tab>
-        <tab
-          label="tab3"
-          index="3"
-        >
-          <span>tab content 3</span>
-        </tab>
+          v-for="tab in stats"
+          :key="tab"
+          :label="tab"
+          :index="tab"
+        />
       </tabs>
     </div>
     <input
-      v-model="inputContent"
       @keyup.enter="addTodo"
       type="text"
       class="add-input"
@@ -43,7 +29,6 @@
     <helper
       :filter="filter"
       :todos="todos"
-      @toggle="toggleFilter"
       @clearAll="clearAllCompleted"
     />
   </section>
@@ -51,7 +36,7 @@
 
 <script>
 import Item from './item.vue'
-import Helper from './tabs.vue'
+import Helper from './helper.vue'
 let id = 0
 
 export default {
@@ -66,8 +51,7 @@ export default {
     return {
       todos: [],
       filter: 'all',
-      tabValue: '1',
-      inputContent: '1'
+      stats: ['all', 'active', 'completed']
     }
   },
   computed: {
@@ -77,7 +61,6 @@ export default {
       }
       const completed = this.filter === 'completed'
       return this.todos.filter(todo => {
-        console.log(todo)
         return completed === todo.completed
       })
     }
@@ -96,16 +79,13 @@ export default {
         return todo.id === id
       }), 1)
     },
-    toggleFilter (state) {
-      this.filter = state
-    },
     clearAllCompleted () {
       this.todos = this.todos.filter(todo => {
         return !todo.completed
       })
     },
     handleChangeTab (value) {
-      this.tabValue = value
+      this.filter = value
     }
   }
 }
