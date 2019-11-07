@@ -70,10 +70,16 @@ export default {
     }
   },
   asyncData ({ store }) {
-    return store.dispatch('fetchTodos')
+    if (store.state.user) {
+      return store.dispatch('fetchTodos')
+    }
+    // router.replace('/login')
+    return Promise.resolve()
   },
   mounted () {
-    // this.fetchTodos()
+    if (this.todos && this.todos.length < 1) {
+      this.fetchTodos()
+    }
   },
   methods: {
     ...mapActions([
