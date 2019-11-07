@@ -69,8 +69,11 @@ export default {
       })
     }
   },
+  asyncData ({ store }) {
+    return store.dispatch('fetchTodos')
+  },
   mounted () {
-    this.fetchTodos()
+    // this.fetchTodos()
   },
   methods: {
     ...mapActions([
